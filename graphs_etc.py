@@ -83,7 +83,40 @@ has no Euler cycle'). If vertex in graph's value not in keys, function returns '
 'e':['a','b','c','d']})
     ['a', 'c', 'b', 'e', 'c', 'd', 'e', 'a']
     """
-    pass
+    if not isinstance(graph, dict):
+        return None
+    for key, value in graph.items():
+        if len(value) == 0 or len (value) % 2 != 0 or key in graph[key]:
+            return 'Graph has no Euler cycle'
+    all_vertex = [i for x in list(graph.values()) for i in x]
+    for vert in list(graph.keys()):
+        if all_vertex.count(vert) != len(graph[vert]):
+            return 'Vertex not in graph'
+    #beginning of Euler cycle search
+    euler_result=[]
+    start = list(graph.keys())[0]
+    euler_result.append(start)
+    while True:
+        vertex = euler_result[-1]
+        for value in graph[vertex]:
+            if len(graph[vertex]) != 1 and value == start:
+                continue
+            if value not in list(graph.keys()):
+                return 'Vertex not in graph'
+            euler_result.append(value)
+            if vertex in graph[value]:
+                graph[value].remove(vertex)
+            graph[vertex].remove(value)
+            break
+        counter = 0
+        for val in graph.values():
+            if  val == []:
+                counter += 1
+        if len(list(graph.keys())) == counter:
+            break
+    if euler_result[0] != euler_result[-1]:
+        return "Graph has no Euler cycle"
+    return euler_result
 
 def dvodolniy(graph):
     '''
