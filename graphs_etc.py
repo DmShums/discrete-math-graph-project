@@ -72,7 +72,42 @@ def dvodolniy(graph):
     3, 5, 7], 5: [6, 4, 7], 6: [1, 5, 7], 7: [1, 2, 3, 4, 5, 6]})
     False
     '''
-    pass
+    keys = list(graph.keys())
+    lst1 = set()
+    lst2 = set()
+
+    # додаємо першу точку в лст1, щоб почати розподіл
+    lst1.add(keys[0])
+
+    # додаємо вельюс(суміжні точки до першої) в лст2
+    for i in graph[keys[0]]:
+        lst2.add(i)
+
+    # проходимось по точках
+    for i in keys[1:]:
+
+        # якщо і в лст2, то перевіряємо чи не належать суміжні вершини цьому лісту
+        # і додаємо їх в інший, якщо перша умова виконується
+        if i in lst2:
+            for elem in lst2:
+                if graph[i] == elem:
+                    return False
+            for value in graph[i]:
+                lst1.add(value)
+
+        # аналогічно, якщо і в лст1
+        elif i in lst1:
+            for elem in lst1:
+                if graph[i] == elem:
+                    return False
+            for value in graph[i]:
+                lst2.add(value)
+
+        # перевіряємо чи лст1 і лст2 не мають спільних елементів
+        if lst1 & lst2:
+            return False
+
+    return True
 
 def graph_coloring(graph):
     """
