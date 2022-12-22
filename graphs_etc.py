@@ -147,7 +147,61 @@ def graph_coloring(graph):
     in three colors or a message about the impossibility of such
     coloring. Should return a list of vertex - color pairs.
     """
-    pass
+    vertices = [i[0] for i in graph.items()]
+    # colors as numbers
+    colors = [0]*len(vertices)
+    # colors as str
+    colors_str = ['red', 'blue', 'green']
+    graph_matrix = [[0]*len(vertices) for _ in range(len(vertices))]
+    final_coloring = []
+
+    # make graph matrix
+    for val in graph.items():
+        for ver in vertices:
+            if ver in val[1]:
+                graph_matrix[val[0]][ver] = 1
+
+    # check if matrix doesn't have zero row
+    for row in graph_matrix:
+        if 1 not in row:
+            return "Unfortunately, coloring is impossible"
+
+    def checkpoint(graph, color):
+        """
+        Check if color is safe to use
+        """
+        # check edges
+        for index in range(len(vertices)):
+            for jndex in range(index + 1, len(vertices)):
+                if graph[index][jndex] and color[jndex] == color[index]:
+                    return False
+        return True
+
+    def coloring_process(graph, col_num, index, color):
+        """
+        The coloring process itself
+        """
+        # final step
+        if index == len(vertices):
+            if checkpoint(graph, color) is True:
+                final_coloring.append(color)
+                return True
+            return False
+
+        # set color from 1 to col_num + 1
+        for j in range(1, col_num + 1):
+            color[index] = j
+            if coloring_process(graph, col_num, index + 1, color) is True:
+                return True
+            color[index] = 0
+        return False
+
+    if coloring_process(graph_matrix, 3, 0, colors) is False:
+        return "Unfortunately, coloring is impossible"
+
+    final_coloring = list(final_coloring[0])
+    output = [(key, colors_str[val-1]) for key, val in enumerate(final_coloring)]
+    return output
 
 def coloring_visualization(graph):
     """
@@ -156,4 +210,39 @@ def coloring_visualization(graph):
     :return None if everything works fine
     :return Unfortunately, coloring is impossible: in other case
     """
-    pass
+    # turn dict graph to list of edges
+    list_of_edges = [(key, node) for key, val in graph.items() for node in val]
+    network = nx.Graph()
+
+    for egde in list_of_edges:
+        network.add_edge(egde[0],egde[1])
+
+    # color specific vertice
+    pos = nx.spring_layout(network,seed=3113794652)
+    colors = graph_coloring(graph)
+    if not isinstance(colors, list):
+        # check if coloring exists
+        return colors
+
+    red_colored = [i[0] for i in colors if i[1]=="red"]
+    blue_colored = [i[0] for i in colors if i[1]=="blue"]
+    green_colored = [i[0] for i in colors if i[1]=="green"]
+
+    nx.draw_networkx_nodes(network, pos, nodelist=red_colored, node_color="tab:red")
+    nx.draw_networkx_nodes(network, pos, nodelist=blue_colored, node_color="tab:blue")
+    nx.draw_networkx_nodes(network, pos, nodelist=green_colored, node_color="tab:green")
+
+    # color edges
+    nx.draw_networkx_edges(
+        network,
+        pos,
+        edgelist=list_of_edges,
+        width=1,
+        alpha=0.5,
+        edge_color="tab:gray",
+    )
+
+    # add labels to the vertices
+    labels = {i:str(i) for i in graph.keys()}
+    nx.draw_networkx_labels(network, pos, labels, font_size=12, font_color="whitesmoke")
+    plt.show()
