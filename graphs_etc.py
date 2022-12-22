@@ -25,16 +25,47 @@ def read_csv(file_name):
 
 def hamiltonian_cycle(graph):
     """
-    dict -> str, list
+    dict -> str or list
     Checking if we can seach for Hamiltonian cycle
     >>> hamiltonian_cycle({0:[1,2,4], 1:[0,3], 2:[0,3,4], 3:[1,2,4], 4:[0,2,3]})
-    Hamiltonian cycle:
     [0, 1, 3, 2, 4, 0]
     >>> hamiltonian_cycle({0:[1,2,4], 1:[0,1,3], 2:[0,3,4], 3:[1,2,4], 4:[0,2,3]})
-
+    'This graph has no Hamiltonian cycle'
     >>> hamiltonian_cycle({0:[1,2,4], 1:[0,3], 2:[0,3,4], 3:[1,2,4], 4:[0,1,2,3]})
+    'This graph has no Hamiltonian cycle'
+    >>> hamiltonian_cycle([[1,2,4], [0,3], [0,3,4], [1,2,4], [0,2,3]])
+    'The graph is not set correctly'
     """
-    pass
+    if not isinstance(graph, dict):
+        return ('The graph is not set correctly')
+    path = []
+    keys = list(graph.keys())
+    for key in keys:
+        if key in graph[key]:
+            return "This graph has no Hamiltonian cycle"
+    all_vertex = [i for x in list(graph.values()) for i in x]
+    for vert in list(graph.keys()):
+        if all_vertex.count(vert) != len(graph[vert]):
+            return "This graph has no Hamiltonian cycle"
+    def cycle(graph,vertixes,root):
+        """
+        Creating path of Hamiltonian cycle
+        """
+        path.append(root)
+        for el in graph[root]:
+            if el not in path:
+                if(cycle(graph,vertixes,el)):
+                    return path
+
+        if(len(path) == vertixes):
+            if(path[0] in graph[path[-1]]):
+                path.append(keys[0])
+                return True 
+            else:
+                path.pop()
+                return "This graph has no Hamiltonian cycle"
+        path.pop()
+    return cycle(graph,len(keys),keys[0])
 
 def euler_cycle(graph):
     """
