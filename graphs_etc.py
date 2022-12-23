@@ -8,18 +8,22 @@ import csv
 import networkx as nx
 import matplotlib.pyplot as plt
 
-
-def read_csv(file_name):
+def read_csv(file_name: str) -> dict:
     """
     Reads csv file, returns graph as dictionary of lists
     """
-    with open(file_name, 'r', encoding='utf-8') as csv_file:
+    with open(file_name, 'r') as csv_file:
         csv_reader = csv.reader(csv_file)
-        i = 0
+        lst = []
         graph = {}
         for row in csv_reader:
-            graph[i] = row
-            i = i + 1
+            vert = int(row[0]) - 1
+            if vert not in lst:
+                lst.append(vert)
+                graph[vert] = []
+            graph[vert].append(int(row[1]) - 1)
+        for vert in lst:
+            graph[vert] = sorted(graph[vert])
 
     return graph
 
