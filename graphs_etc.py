@@ -43,6 +43,9 @@ def hamiltonian_cycle(graph):
     for key in keys:
         if key in graph[key]:
             return "This graph has no Hamiltonian cycle"
+    for key, value in graph.items():
+        if len(value) == 0:
+            return "This graph has no Hamiltonian cycle"
     all_vertex = [i for x in list(graph.values()) for i in x]
     for vert in list(graph.keys()):
         if all_vertex.count(vert) != len(graph[vert]):
